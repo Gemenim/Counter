@@ -11,20 +11,19 @@ public class Counter : MonoBehaviour
     private bool _isOff = true;
     private IEnumerator _timeCounter;
 
-    public Action Change;
-
-    public float Count => _count;
+    public event Action<float> Changed;
 
     private void Start()
     {
-        _timeCounter = TimeCounter();
+        _timeCounter = TimeCounter(); 
+        Changed?.Invoke(_count);
     }
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if(_isOff)
+            if (_isOff)
             {
                 _isOff = false;
                 StartCoroutine(_timeCounter);
@@ -38,7 +37,7 @@ public class Counter : MonoBehaviour
         else if (Input.GetMouseButtonDown(1))
         {
             _count = 0;
-            Change();
+            Changed?.Invoke(_count);
         }
     }
 
@@ -51,10 +50,10 @@ public class Counter : MonoBehaviour
     {
         WaitForSeconds delayTime = new WaitForSeconds(_delayTime);
 
-        while (true)
+        while (enabled)
         {
             TakeTeime(_delayTime);
-            Change();
+            Changed?.Invoke(_count);
 
             yield return delayTime;
         }
